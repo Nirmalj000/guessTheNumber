@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Number</title>
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            position: relative;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        #game-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 90%;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #444;
+            font-size: 2rem;
+        }
+
+        p {
+            margin: 10px 0;
+            color: #666;
+        }
+
+        #guess {
+            width: calc(100% - 30px);
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: border 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        #guess:focus {
+            border: 1px solid #4CAF50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.4);
+        }
+
+        button {
+            width: calc(50% - 10px);
+            padding: 12px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .secondary-btn {
+            background-color: #ddd;
+            color: #444;
+        }
+
+        .secondary-btn:hover {
+            background-color: #ccc;
+        }
+
+        #progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        #progress {
+            height: 100%;
+            background-color: #4CAF50;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.3s ease-in-out;
+        }
+
+        #difficulty-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            background-color: #f9f9f9;
+            color: #444;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        #difficulty-select:hover {
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.4);
+        }
+
+        
+        #dark-mode-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #dark-mode-btn:hover {
+            background-color: #45a049;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        #dark-mode-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* General dark mode styles */
+    body.dark-theme {
+        background-color: #121212; /* Deep dark background */
+        color: #e0e0e0; /* Light text for better contrast */
+    }
+
+    body.dark-theme #game-container {
+        background-color: #1e1e1e; /* Slightly lighter for container */
+        color: #e0e0e0; /* Consistent text color */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    body.dark-theme input, 
+    body.dark-theme select {
+        background-color: #333; /* Input fields in dark gray */
+        border: 1px solid #444; /* Slight border for contrast */
+        color: #fff;
+    }
+
+    body.dark-theme button {
+        background-color: #4CAF50; /* Keep buttons distinct */
+        color: #fff;
+    }
+
+    body.dark-theme button:hover {
+        background-color: #45a049; /* Hover effect */
+    }
+
+    body.dark-theme #progress-bar {
+        background-color: #444; /* Progress bar container */
+    }
+
+    body.dark-theme #progress {
+        background-color: #76c7c0; /* Bright progress color */
+    }
+
+    body.dark-theme select {
+        border: 1px solid #666; /* Improve dropdown contrast */
+        background-color: #1e1e1e; /* Dropdown matches container */
+        color: #fff; /* Text visibility */
+    }
+
+    body.dark-theme select:hover {
+        border: 1px solid #4CAF50; /* Highlight dropdown on hover */
+    }
+
+    body.dark-theme #dark-mode-btn {
+        background-color: #333;
+        color: #fff;
+        border: 1px solid #4CAF50;
+    }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Guess the Number</h1>
+        <p>I'm thinking of a number between 1 and <span id="range">100</span>.</p>
+        <input type="number" id="guess" placeholder="Enter your guess" min="1" max="100">
+        <div>
+            <button id="submit-btn" onclick="checkGuess()">Submit</button>
+            <button class="secondary-btn" onclick="resetGame()">Reset</button>
+        </div>
+
+        <div id="progress-bar">
+            <div id="progress"></div>
+        </div>
+
+        <p id="message">Good luck!</p>
+        <p id="attempts">Attempts: 0</p>
+        <p id="remaining-chances">Remaining Chances: 10</p>
+        <p id="high-score">Best Score: Not set</p>
+        <select id="difficulty-select" onchange="setDifficulty()">
+            <option value="3">Easy (1-10)</option>
+            <option value="10" selected>Medium (1-100)</option>
+            <option value="20">Hard (1-1000)</option>
+        </select>
+    </div>
+    <button id="dark-mode-btn" onclick="toggleTheme()">☀︎</button>
+
+    <script>
+        let randomNumber;
+        let attempts = 0;
+        let maxChances = 10; // Default to medium level
+        let bestScore = localStorage.getItem('bestScore') || null;
+
+        function setDifficulty() {
+            const difficulty = document.getElementById("difficulty-select").value;
+            maxChances = parseInt(difficulty);
+
+            let range = 100;
+            if (maxChances === 3) range = 10;
+            else if (maxChances === 10) range = 100;
+            else if (maxChances === 20) range = 1000;
+
+            document.getElementById("range").textContent = range;
+            resetGame();
+        }
+
+        function generateRandomNumber() {
+            const range = document.getElementById("range").textContent;
+            randomNumber = Math.floor(Math.random() * range) + 1;
+        }
+
+        function checkGuess() {
+            const guess = parseInt(document.getElementById("guess").value);
+            if (isNaN(guess)) {
+                document.getElementById("message").textContent = "Please enter a valid number.";
+                return;
+            }
+
+            attempts++;
+            updateProgressBar((attempts / maxChances) * 100);
+
+            if (guess === randomNumber) {
+                document.getElementById("message").textContent = "🎉 Congratulations! You guessed it!";
+                endGame();
+                if (!bestScore || attempts < bestScore) {
+                    bestScore = attempts;
+                    localStorage.setItem('bestScore', bestScore);
+                    document.getElementById("high-score").textContent = `Best Score: ${bestScore}`;
+                }
+            } else if (guess < randomNumber) {
+                document.getElementById("message").textContent = "📉 Too low!";
+            } else {
+                document.getElementById("message").textContent = "📈 Too high!";
+            }
+
+            document.getElementById("attempts").textContent = `Attempts: ${attempts}`;
+            const remainingChances = maxChances - attempts;
+            document.getElementById("remaining-chances").textContent = `Remaining Chances: ${remainingChances}`;
+
+            if (remainingChances === 0) {
+                document.getElementById("message").textContent = "😞 Game Over! You've run out of chances.";
+                endGame();
+            }
+        }
+
+        function updateProgressBar(progress) {
+            document.getElementById("progress").style.width = `${progress}%`;
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle("dark-theme");
+        }
+
+        function endGame() {
+            document.getElementById("submit-btn").disabled = true;
+            document.getElementById("guess").disabled = true;
+        }
+
+        function resetGame() {
+            attempts = 0;
+            document.getElementById("attempts").textContent = `Attempts: ${attempts}`;
+            document.getElementById("remaining-chances").textContent = `Remaining Chances: ${maxChances}`;
+            document.getElementById("message").textContent = "Good luck!";
+            document.getElementById("guess").value = "";
+            document.getElementById("guess").disabled = false;
+            document.getElementById("submit-btn").disabled = false;
+            updateProgressBar(0);
+            generateRandomNumber();
+        }
+
+        // Initialize game
+        window.onload = () => {
+            generateRandomNumber();
+            document.getElementById("high-score").textContent = bestScore
+                ? `Best Score: ${bestScore}`
+                : "Best Score: Not set";
+        };
+    </script>
+</body>
+</html>
